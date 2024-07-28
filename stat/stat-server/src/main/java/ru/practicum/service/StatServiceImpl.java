@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.HitDto;
 import ru.practicum.StatDto;
-import ru.practicum.model.Hit;
-import ru.practicum.model.Stat;
+import ru.practicum.repository.entity.Hit;
+import ru.practicum.repository.entity.Stat;
 import ru.practicum.repository.HitRepository;
 
 import java.time.LocalDateTime;

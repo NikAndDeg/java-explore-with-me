@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatController {
 	private final StatService service;
-	public static final String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
+	private static final String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
 
 	@PostMapping("/hit")
 	public HitDto saveHit(@RequestBody @Valid HitDto hitDto) {

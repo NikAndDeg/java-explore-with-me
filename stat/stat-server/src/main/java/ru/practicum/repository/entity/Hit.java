@@ -1,4 +1,4 @@
-package ru.practicum.model;
+package ru.practicum.repository.entity;
 
 import javax.persistence.*;
 import lombok.Getter;
