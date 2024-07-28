@@ -9,7 +9,7 @@ import ru.practicum.model.Stat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @Sql("/hit_repository_test_schema.sql")
