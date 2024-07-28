@@ -12,6 +12,7 @@ import ru.practicum.repository.HitRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +36,7 @@ public class StatServiceImpl implements StatService {
 			stats = repository.findStat(start, end, uris);
 		return stats.stream()
 				.map(this::statModelToDto)
-				.toList();
+				.collect(Collectors.toList());
 	}
 
 	private StatDto statModelToDto(Stat stat) {
