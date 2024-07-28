@@ -30,10 +30,17 @@ public class StatServiceImpl implements StatService {
 	@Override
 	public List<StatDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 		List<Stat> stats;
-		if (unique)
-			stats = repository.findStatDistinct(start, end, uris);
-		else
-			stats = repository.findStat(start, end, uris);
+		if (unique) {
+			if (uris == null || uris.isEmpty())
+				stats = repository.findStatDistinct(start, end);
+			else
+				stats = repository.findStatWithUrisDistinct(start, end, uris);
+		} else {
+			if (uris == null || uris.isEmpty())
+				stats = repository.findStat(start, end);
+			else
+				stats = repository.findStatWithUris(start, end, uris);
+		}
 		return stats.stream()
 				.map(this::statModelToDto)
 				.collect(Collectors.toList());

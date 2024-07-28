@@ -30,8 +30,7 @@ class HitRepositoryTest {
 
 		actual = hitRepository.findStat(
 				LocalDateTime.parse("2020-01-01T10:00:00"),
-				LocalDateTime.parse("2020-01-01T14:00:00"),
-				null
+				LocalDateTime.parse("2020-01-01T14:00:00")
 		);
 
 		assertEquals(3, actual.size());
@@ -49,8 +48,7 @@ class HitRepositoryTest {
 
 		actual = hitRepository.findStatDistinct(
 				LocalDateTime.parse("2020-01-01T10:00:00"),
-				LocalDateTime.parse("2020-01-01T13:00:00"),
-				null
+				LocalDateTime.parse("2020-01-01T13:00:00")
 		);
 
 		assertEquals(2, actual.size());
@@ -59,13 +57,13 @@ class HitRepositoryTest {
 	}
 
 	@Test
-	void find_stat_test_uris_is_not_null() {
+	void find_stat_test_with_one_uri() {
 		expected = List.of(
 				createStat("some.app", "/hello-world", 2L),
 				createStat("another.app", "/hello-world", 1L)
 		);
 
-		actual = hitRepository.findStat(
+		actual = hitRepository.findStatWithUris(
 				LocalDateTime.parse("2020-01-01T10:00:00"),
 				LocalDateTime.parse("2020-01-01T14:00:00"),
 				List.of("/hello-world")
@@ -74,6 +72,26 @@ class HitRepositoryTest {
 		assertEquals(2, actual.size());
 		assertEquals(expected.get(0), actual.get(0));
 		assertEquals(expected.get(1), actual.get(1));
+	}
+
+	@Test
+	void find_stat_test_with_two_uri() {
+		expected = List.of(
+				createStat("some.app", "/goodbye-world", 2L),
+				createStat("some.app", "/hello-world", 2L),
+				createStat("another.app", "/hello-world", 1L)
+		);
+
+		actual = hitRepository.findStatWithUris(
+				LocalDateTime.parse("2020-01-01T10:00:00"),
+				LocalDateTime.parse("2020-01-01T14:00:00"),
+				List.of("/hello-world", "/goodbye-world")
+		);
+
+		assertEquals(3, actual.size());
+		assertEquals(expected.get(0), actual.get(0));
+		assertEquals(expected.get(1), actual.get(1));
+		assertEquals(expected.get(2), actual.get(2));
 	}
 
 	private Stat createStat(String app, String uri, Long hits) {
