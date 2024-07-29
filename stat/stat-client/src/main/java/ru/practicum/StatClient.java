@@ -1,5 +1,6 @@
 package ru.practicum;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,9 +12,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class StatClient {
-	private static final String statServerUrl = "http://localhost:9090";
-	public static final  String hitPath = "/hit";
-	public static final  String statPath = "/stats";
+	@Value("${stat-server.url}")
+	private static String statServerUrl;
+	@Value("${stat-server.url.path.hit}")
+	private static String hitPath;
+	@Value("${stat-server.url.path.stat}")
+	private static String statPath;
 
 	public static Mono<?> sendHitToSave(WebClient client,
 										String app,
