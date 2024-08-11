@@ -1,8 +1,8 @@
 package ru.practicum.service.event;
 
 import ru.practicum.exception.BadRequestException;
-import ru.practicum.exception.DataNotConditionalException;
 import ru.practicum.exception.DataConflictException;
+import ru.practicum.exception.DataNotConditionalException;
 import ru.practicum.exception.DataNotFoundException;
 import ru.practicum.model.dto.event.EventFullDto;
 import ru.practicum.model.dto.event.EventShortDto;

@@ -8,8 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import ru.practicum.StatClient;
 import ru.practicum.StatDto;
 import ru.practicum.exception.BadRequestException;
-import ru.practicum.exception.DataNotConditionalException;
 import ru.practicum.exception.DataConflictException;
+import ru.practicum.exception.DataNotConditionalException;
 import ru.practicum.exception.DataNotFoundException;
 import ru.practicum.model.dto.event.EventFullDto;
 import ru.practicum.model.dto.event.EventShortDto;
@@ -136,18 +136,17 @@ public class EventServiceImpl implements EventService {
 		eventToSave.setLocation(location);
 
 
-
 		return EventMapper.entityToFullDto(eventRepository.save(eventToSave));
 	}
 
 	@Override
 	public EventFullDto getUserEvent(int userId, int eventId) throws DataNotFoundException {
 		EventEntity eventEntity = eventRepository.findWithCategoryInitiatorLocationById(eventId).orElseThrow(
-				() -> new DataNotFoundException("Event with id[" + + eventId + "] not found.")
+				() -> new DataNotFoundException("Event with id[" + +eventId + "] not found.")
 		);
 
 		if (!eventEntity.getInitiator().getId().equals(userId))
-			throw new DataNotFoundException("Event with id[" + + eventId + "] not found.");
+			throw new DataNotFoundException("Event with id[" + +eventId + "] not found.");
 
 		EventFullDto eventDto = EventMapper.entityToFullDto(eventEntity);
 
@@ -170,7 +169,7 @@ public class EventServiceImpl implements EventService {
 		);
 
 		if (!eventToUpdate.getInitiator().getId().equals(userId))
-			throw new DataNotFoundException("Event with id[" + + eventId + "] not found.");
+			throw new DataNotFoundException("Event with id[" + +eventId + "] not found.");
 
 		if (eventToUpdate.getState().equals(EventState.PUBLISHED))
 			throw new DataConflictException("Event with id[" + eventId + "] is published.");
@@ -191,7 +190,7 @@ public class EventServiceImpl implements EventService {
 		);
 
 		if (!event.getInitiator().getId().equals(userId))
-			throw new DataNotFoundException("Event with id[" + + eventId + "] not found.");
+			throw new DataNotFoundException("Event with id[" + +eventId + "] not found.");
 
 		List<ParticipationRequestEntity> requests = event.getRequests();
 
@@ -283,8 +282,7 @@ public class EventServiceImpl implements EventService {
 			request.setStatus(ParticipationStatus.CONFIRMED);
 			event.setConfirmedRequests(event.getConfirmedRequests() + 1);
 			eventRepository.save(event);
-		}
-		else {
+		} else {
 			request.setStatus(ParticipationStatus.PENDING);
 		}
 		return request;
@@ -301,12 +299,12 @@ public class EventServiceImpl implements EventService {
 
 		EventEntity event = request.getEvent();
 
-		if (request.getStatus().equals(ParticipationStatus.CONFIRMED)){
+		if (request.getStatus().equals(ParticipationStatus.CONFIRMED)) {
 			request.setStatus(ParticipationStatus.CANCELED);
 			event.setConfirmedRequests(event.getConfirmedRequests() - 1);
 			eventRepository.save(event);
 		}
-		if (request.getStatus().equals(ParticipationStatus.PENDING)){
+		if (request.getStatus().equals(ParticipationStatus.PENDING)) {
 			request.setStatus(ParticipationStatus.CANCELED);
 		}
 
@@ -405,7 +403,7 @@ public class EventServiceImpl implements EventService {
 		requests.forEach(request -> {
 			if (!request.getStatus().equals(ParticipationStatus.PENDING))
 				throw new DataConflictException("Requests must have status PENDING." +
-						" Request with id[" + request.getId() +"] have status[" + request.getStatus() +"].");
+						" Request with id[" + request.getId() + "] have status[" + request.getStatus() + "].");
 
 			if (updateRequestIds.contains(request.getId())) {
 				if (newStatus.equals(ParticipationStatus.CONFIRMED)) {

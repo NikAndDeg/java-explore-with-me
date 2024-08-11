@@ -6,9 +6,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.dto.event.EventFullDto;
-import ru.practicum.model.event.EventState;
 import ru.practicum.model.dto.request.GetEventsServiceRequest;
 import ru.practicum.model.dto.request.UpdateEventAdminRequest;
+import ru.practicum.model.event.EventState;
 import ru.practicum.service.event.EventService;
 
 import javax.validation.Valid;

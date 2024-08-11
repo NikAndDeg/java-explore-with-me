@@ -105,7 +105,7 @@ public class CompilationServiceImpl implements CompilationService {
 		}
 		if (request.getPinned() != null)
 			compilationToUpdate.setPinned(request.getPinned());
-		if(request.getTitle() != null)
+		if (request.getTitle() != null)
 			compilationToUpdate.setTitle(request.getTitle());
 	}
 }

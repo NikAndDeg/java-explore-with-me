@@ -1,6 +1,5 @@
 package ru.practicum.model.dto.request;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.model.dto.event.participation.ParticipationRequestDto;

@@ -7,8 +7,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.dto.event.EventFullDto;
 import ru.practicum.model.dto.event.EventShortDto;
-import ru.practicum.model.event.EventSort;
 import ru.practicum.model.dto.request.PublicGetEventsRequest;
+import ru.practicum.model.event.EventSort;
 import ru.practicum.service.event.EventService;
 import ru.practicum.util.Pagenator;
 

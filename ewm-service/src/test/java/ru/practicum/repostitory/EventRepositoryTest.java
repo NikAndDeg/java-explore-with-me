@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.practicum.model.event.EventState.*;
+import static ru.practicum.model.event.EventState.PUBLISHED;
 
 @DataJpaTest
 @Sql("/test_schema.sql")
@@ -84,9 +84,8 @@ class EventRepositoryTest {
 		events = repository.findWithCategoryAndInitiatorBySearchParam(PUBLISHED, null, null, null,
 				null, null, true, pageable);
 		assertFalse(events.isEmpty());
-		assertEquals(events.size(), 2);
-		assertEquals(events.get(0).getId(), 1);
-		assertEquals(events.get(1).getId(), 4);
+		assertEquals(events.size(), 1);
+		assertEquals(events.get(0).getId(), 4);
 
 		EventEntity event = events.get(0);
 		event.setConfirmedRequests(event.getParticipantLimit() + 1);

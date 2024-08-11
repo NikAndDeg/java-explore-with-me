@@ -2,7 +2,6 @@ package ru.practicum.model.dto.request;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 

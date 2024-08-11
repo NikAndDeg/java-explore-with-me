@@ -21,7 +21,7 @@ public class JacksonConfiguration {
 
 			// formatter
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
-			DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern(dateTimePattern);
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
 
 			// deserializers
 			builder.deserializers(new LocalDateDeserializer(dateFormatter));

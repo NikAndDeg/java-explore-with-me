@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.model.dto.user.UserDto;
 import ru.practicum.model.dto.request.NewUserRequest;
+import ru.practicum.model.dto.user.UserDto;
 import ru.practicum.service.user.UserService;
 
 import javax.validation.Valid;
@@ -24,8 +24,8 @@ public class AdminUserController {
 	//GET /admin/users
 	@GetMapping
 	public List<UserDto> getUsers(@RequestParam(required = false) List<Integer> ids,
-						   @RequestParam(defaultValue = "0") @Min(0) int from,
-						   @RequestParam(defaultValue = "10") @Min(1) int size) {
+								  @RequestParam(defaultValue = "0") @Min(0) int from,
+								  @RequestParam(defaultValue = "10") @Min(1) int size) {
 		log.info("Request to get users");
 		List<UserDto> users = userService.getUsers(ids, from, size);
 		log.info("Users[{}] received.", users);

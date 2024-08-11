@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.model.event.EventState;
 
-import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 

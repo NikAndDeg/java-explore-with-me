@@ -48,7 +48,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Integer> {
 			"JOIN e.category c " +
 			"WHERE (:eventState IS NULL OR e.state = :eventState) " +
 			"AND (:text IS NULL OR ( (lower(e.annotation) like lower(concat('%', :text,'%'))) " +
-				"OR (lower(e.description) like lower(concat('%', :text,'%'))) ) ) " +
+			"OR (lower(e.description) like lower(concat('%', :text,'%'))) ) ) " +
 			"AND ( (cast(:start as timestamp) IS NULL AND e.eventDate >= NOW()) OR e.eventDate >= :start) " +
 			"AND (cast(:end as timestamp) IS NULL OR e.eventDate <= :end) " +
 			"AND (:categoriesId IS NULL or c.id IN :categoriesId) " +

@@ -9,10 +9,14 @@ import java.util.List;
 
 public interface CategoryService {
 	CategoryDto addCategory(NewCategoryDto newCategoryDto) throws DataConflictException;
+
 	CategoryDto deleteCategory(int categoryId) throws DataNotFoundException,
 			DataConflictException;
+
 	CategoryDto updateCategory(int categoryId, NewCategoryDto newCategoryDto) throws DataNotFoundException,
 			DataConflictException;
+
 	List<CategoryDto> getCategories(int from, int size);
+
 	CategoryDto getCategory(int categoryId) throws DataNotFoundException;
 }

@@ -17,7 +17,6 @@ import ru.practicum.service.event.EventService;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,8 +29,8 @@ public class PrivateEventController {
 	//GET /users/{userId}/events
 	@GetMapping("/events")
 	public List<EventShortDto> getUserEvent(@PathVariable @Min(1) int userId,
-									  @RequestParam(defaultValue = "0") @Min(0) int from,
-									  @RequestParam(defaultValue = "10") @Min(1) int size) {
+											@RequestParam(defaultValue = "0") @Min(0) int from,
+											@RequestParam(defaultValue = "10") @Min(1) int size) {
 		log.info("Request to get user's events with userId[{}], from[{}], size[{}].", userId, from, size);
 		List<EventShortDto> events = eventService.getUserEvents(userId, from, size);
 		log.info("User's events received.");

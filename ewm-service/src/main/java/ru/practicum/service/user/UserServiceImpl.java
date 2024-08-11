@@ -6,12 +6,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.exception.DataConflictException;
 import ru.practicum.exception.DataNotFoundException;
-import ru.practicum.util.mapper.UserMapper;
-import ru.practicum.model.dto.user.UserDto;
 import ru.practicum.model.dto.request.NewUserRequest;
+import ru.practicum.model.dto.user.UserDto;
 import ru.practicum.model.entity.UserEntity;
 import ru.practicum.repostitory.UserRepository;
 import ru.practicum.util.Pagenator;
+import ru.practicum.util.mapper.UserMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
