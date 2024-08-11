@@ -9,8 +9,8 @@ import ru.practicum.model.dto.event.category.CategoryDto;
 import ru.practicum.model.dto.event.category.NewCategoryDto;
 import ru.practicum.service.category.CategoryService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
 @Slf4j
 @RequiredArgsConstructor

@@ -4,8 +4,8 @@ import lombok.Data;
 import ru.practicum.model.event.EventStateActionUser;
 import ru.practicum.model.event.location.Location;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data

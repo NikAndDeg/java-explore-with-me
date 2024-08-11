@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.dto.event.category.CategoryDto;
 import ru.practicum.service.category.CategoryService;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j

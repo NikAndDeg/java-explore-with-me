@@ -31,7 +31,7 @@ import ru.practicum.util.mapper.EventMapper;
 import ru.practicum.util.mapper.LocationMapper;
 import ru.practicum.util.mapper.ParticipationRequestMapper;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;

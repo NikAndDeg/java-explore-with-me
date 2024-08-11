@@ -10,7 +10,7 @@ import ru.practicum.model.dto.event.NewEventDto;
 import ru.practicum.model.dto.event.participation.ParticipationRequestDto;
 import ru.practicum.model.dto.request.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {

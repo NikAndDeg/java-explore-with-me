@@ -10,8 +10,8 @@ import ru.practicum.model.dto.event.compilation.NewCompilationDto;
 import ru.practicum.model.dto.request.UpdateCompilationRequest;
 import ru.practicum.service.compilation.CompilationService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
 @Slf4j
 @RequiredArgsConstructor

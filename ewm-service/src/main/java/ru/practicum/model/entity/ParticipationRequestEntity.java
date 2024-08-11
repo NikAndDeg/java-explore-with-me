@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.model.event.participation.ParticipationStatus;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter

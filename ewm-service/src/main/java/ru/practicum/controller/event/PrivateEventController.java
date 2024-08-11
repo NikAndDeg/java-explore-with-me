@@ -14,8 +14,8 @@ import ru.practicum.model.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.model.dto.request.UpdateEventUserRequest;
 import ru.practicum.service.event.EventService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j

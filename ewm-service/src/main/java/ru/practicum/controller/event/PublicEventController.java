@@ -12,8 +12,8 @@ import ru.practicum.model.event.EventSort;
 import ru.practicum.service.event.EventService;
 import ru.practicum.util.Pagenator;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Min;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 

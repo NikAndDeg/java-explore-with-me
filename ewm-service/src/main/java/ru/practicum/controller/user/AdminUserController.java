@@ -9,8 +9,8 @@ import ru.practicum.model.dto.request.NewUserRequest;
 import ru.practicum.model.dto.user.UserDto;
 import ru.practicum.service.user.UserService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j

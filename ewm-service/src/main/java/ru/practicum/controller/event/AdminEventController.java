@@ -11,8 +11,8 @@ import ru.practicum.model.dto.request.UpdateEventAdminRequest;
 import ru.practicum.model.event.EventState;
 import ru.practicum.service.event.EventService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 
