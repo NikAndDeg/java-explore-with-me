@@ -7,10 +7,10 @@ import ru.practicum.repository.entity.Stat;
 @UtilityClass
 public class StatDtoMapper {
 	public static StatDto statModelToDto(Stat stat) {
-		return StatDto.builder()
-				.app(stat.getApp())
-				.uri(stat.getUri())
-				.hits(stat.getHits())
-				.build();
+		StatDto statDto = new StatDto();
+		statDto.setApp(stat.getApp());
+		statDto.setUri(stat.getUri());
+		statDto.setHits(stat.getHits());
+		return statDto;
 	}
 }
