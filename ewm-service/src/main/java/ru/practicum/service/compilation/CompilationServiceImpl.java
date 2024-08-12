@@ -3,6 +3,7 @@ package ru.practicum.service.compilation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.DataConflictException;
 import ru.practicum.exception.DataNotFoundException;
 import ru.practicum.model.dto.event.compilation.CompilationDto;
@@ -26,6 +27,7 @@ public class CompilationServiceImpl implements CompilationService {
 	private final EventRepository eventRepository;
 
 	@Override
+	@Transactional
 	public CompilationDto addCompilation(NewCompilationDto newCompilationDto) throws DataConflictException {
 		CompilationEntity compilation = CompilationMapper.newDtoToEntity(newCompilationDto);
 
@@ -43,6 +45,7 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
+	@Transactional
 	public CompilationDto deleteCompilation(int compilationId) throws DataNotFoundException {
 		CompilationEntity compilationToDelete = compilationRepository.findById(compilationId).orElseThrow(
 				() -> new DataNotFoundException("Compilation with id[" + compilationId + "] not found.")
@@ -54,6 +57,7 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
+	@Transactional
 	public CompilationDto updateCompilation(int compilationId, UpdateCompilationRequest request) throws DataNotFoundException {
 		CompilationEntity compilationToUpdate = compilationRepository.findWithEventsWithCategoryAndInitiatorById(compilationId).orElseThrow(
 				() -> new DataNotFoundException("Compilation with id[" + compilationId + "] not found.")
@@ -69,6 +73,7 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
+	@Transactional
 	public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
 		List<CompilationEntity> compilations;
 
@@ -87,6 +92,7 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
+	@Transactional
 	public CompilationDto getCompilation(int compilationId) throws DataNotFoundException {
 		CompilationEntity compilation = compilationRepository.findWithEventsWithCategoryAndInitiatorById(compilationId).orElseThrow(
 				() -> new DataNotFoundException("Compilation with id[" + compilationId + "] not found.")

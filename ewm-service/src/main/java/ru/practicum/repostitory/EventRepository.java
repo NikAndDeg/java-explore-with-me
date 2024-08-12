@@ -37,7 +37,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Integer> {
 			"WHERE (:usersId IS NULL OR u.id IN :usersId) " +
 			"AND (:states IS NULL OR e.state IN :states) " +
 			"AND (:categoriesId IS NULL or c.id IN :categoriesId) " +
-			"AND ( (cast(:start as timestamp) IS NULL AND e.eventDate >= NOW()) OR e.eventDate >= :start) " +
+			"AND ( (cast(:start as timestamp) IS NULL AND e.eventDate >= current_timestamp()) OR e.eventDate >= :start) " +
 			"AND (cast(:end as timestamp) IS NULL OR e.eventDate <= :end) ")
 	@EntityGraph(attributePaths = {"category", "initiator", "location"})
 	List<EventEntity> findWithCategoryInitiatorLocationBySearchParam(List<Integer> usersId, List<EventState> states,
@@ -47,9 +47,8 @@ public interface EventRepository extends JpaRepository<EventEntity, Integer> {
 	@Query("SELECT e FROM EventEntity e " +
 			"JOIN e.category c " +
 			"WHERE (:eventState IS NULL OR e.state = :eventState) " +
-			"AND (:text IS NULL OR ( (lower(e.annotation) like lower(concat('%', :text,'%'))) " +
-			"OR (lower(e.description) like lower(concat('%', :text,'%'))) ) ) " +
-			"AND ( (cast(:start as timestamp) IS NULL AND e.eventDate >= NOW()) OR e.eventDate >= :start) " +
+			"AND (lower(:text) IS NULL OR ((lower(e.annotation) like lower(concat('%', :text,'%'))) OR (lower(e.description) like lower(concat('%', :text,'%'))))) " +
+			"AND ( (cast(:start as timestamp) IS NULL AND e.eventDate >= current_timestamp()) OR e.eventDate >= :start) " +
 			"AND (cast(:end as timestamp) IS NULL OR e.eventDate <= :end) " +
 			"AND (:categoriesId IS NULL or c.id IN :categoriesId) " +
 			"AND (:paid IS NULL OR e.paid = :paid) " +

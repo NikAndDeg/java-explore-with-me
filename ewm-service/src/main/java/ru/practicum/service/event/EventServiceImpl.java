@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.practicum.StatClient;
 import ru.practicum.StatDto;
@@ -54,6 +55,7 @@ public class EventServiceImpl implements EventService {
 	private final RequestRepository requestRepository;
 
 	@Override
+	@Transactional
 	public List<EventFullDto> getEvents(GetEventsServiceRequest request) throws BadRequestException {
 		if (request.getStart() != null && request.getEnd() != null)
 			if (request.getStart().isAfter(request.getEnd()))
@@ -77,6 +79,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventFullDto updateEvent(int eventId, UpdateEventAdminRequest request) throws BadRequestException,
 			DataNotFoundException, DataNotConditionalException {
 
@@ -101,6 +104,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public List<EventShortDto> getUserEvents(int userId, int from, int size) throws DataNotFoundException {
 		UserEntity user = getUserEntityOrThrowException(userId);
 
@@ -113,6 +117,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventFullDto addEvent(int userId, NewEventDto newEventDto) throws BadRequestException,
 			DataNotFoundException {
 
@@ -140,6 +145,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventFullDto getUserEvent(int userId, int eventId) throws DataNotFoundException {
 		EventEntity eventEntity = eventRepository.findWithCategoryInitiatorLocationById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + +eventId + "] not found.")
@@ -156,6 +162,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventFullDto updateEvent(int userId, int eventId, UpdateEventUserRequest updateRequest) throws DataNotFoundException,
 			BadRequestException, DataConflictException {
 
@@ -184,6 +191,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public List<ParticipationRequestDto> getParticipationRequests(int userId, int eventId) {
 		EventEntity event = eventRepository.findWithInitiatorRequestsWithRequesterById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
@@ -203,6 +211,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventRequestStatusUpdateResult updateEventRequestStatus(int userId, int eventId,
 																   EventRequestStatusUpdateRequest updateRequest)
 			throws DataNotFoundException, DataNotConditionalException, DataConflictException {
@@ -226,6 +235,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public List<ParticipationRequestDto> getUserParticipationRequests(int userId) throws DataNotFoundException {
 		UserEntity user = userRepository.findWithRequestsAndEventsById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id [" + userId + "] doesn't exist.")
@@ -239,6 +249,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public ParticipationRequestDto addParticipationRequest(int userId, int eventId) throws DataNotFoundException,
 			DataConflictException {
 
@@ -248,7 +259,7 @@ public class EventServiceImpl implements EventService {
 
 		List<Integer> userRequestsEventsId = user.getRequests().stream()
 				.map(request -> request.getEvent().getId())
-				.collect(Collectors.toList());
+				.toList();
 		if (userRequestsEventsId.contains(eventId))
 			throw new DataConflictException("Cannot add duplicate request.");
 
@@ -273,22 +284,8 @@ public class EventServiceImpl implements EventService {
 		return ParticipationRequestMapper.entityToDto(savedRequest);
 	}
 
-	private ParticipationRequestEntity createRequest(UserEntity user, EventEntity event) {
-		ParticipationRequestEntity request = new ParticipationRequestEntity();
-		request.setRequester(user);
-		request.setEvent(event);
-		request.setCreatedOn(LocalDateTime.now());
-		if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
-			request.setStatus(ParticipationStatus.CONFIRMED);
-			event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-			eventRepository.save(event);
-		} else {
-			request.setStatus(ParticipationStatus.PENDING);
-		}
-		return request;
-	}
-
 	@Override
+	@Transactional
 	public ParticipationRequestDto cancelParticipationRequest(int userId, int requestId) throws DataNotFoundException {
 		ParticipationRequestEntity request = requestRepository.findWithRequesterEventById(requestId).orElseThrow(
 				() -> new DataNotFoundException("Request with id [" + requestId + "] doesn't exist.")
@@ -312,6 +309,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public List<EventShortDto> getPublicEvents(PublicGetEventsRequest request, HttpServletRequest httpServletRequest) throws
 			BadRequestException {
 
@@ -341,6 +339,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventFullDto getEvent(int eventId, HttpServletRequest httpRequest) throws DataNotFoundException {
 		EventEntity eventEntity = eventRepository.findWithCategoryInitiatorLocationByIdAndStateIn(eventId,
 				List.of(EventState.PUBLISHED)).orElseThrow(
@@ -354,6 +353,21 @@ public class EventServiceImpl implements EventService {
 		sendHit(httpRequest);
 
 		return eventDto;
+	}
+
+	private ParticipationRequestEntity createRequest(UserEntity user, EventEntity event) {
+		ParticipationRequestEntity request = new ParticipationRequestEntity();
+		request.setRequester(user);
+		request.setEvent(event);
+		request.setCreatedOn(LocalDateTime.now());
+		if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
+			request.setStatus(ParticipationStatus.CONFIRMED);
+			event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+			eventRepository.save(event);
+		} else {
+			request.setStatus(ParticipationStatus.PENDING);
+		}
+		return request;
 	}
 
 	private void sortEventsShortDto(List<EventShortDto> events, EventSort sort) {

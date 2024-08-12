@@ -2,8 +2,8 @@ package ru.practicum.service.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.DataConflictException;
 import ru.practicum.exception.DataNotFoundException;
@@ -24,43 +24,35 @@ public class CategoryServiceImpl implements CategoryService {
 	private final CategoryRepository categoryRepository;
 
 	@Override
+	@Transactional
 	public CategoryDto addCategory(NewCategoryDto newCategoryDto) throws DataConflictException {
-		try {
-			CategoryEntity savedCategory = categoryRepository.save(CategoryMapper.newCategoryDtoToEntity(newCategoryDto));
-			return CategoryMapper.entityToDto(savedCategory);
-		} catch (DataIntegrityViolationException e) {
-			throw new DataConflictException(e.getMessage());
-		}
+		CategoryEntity savedCategory = categoryRepository.save(CategoryMapper.newCategoryDtoToEntity(newCategoryDto));
+		return CategoryMapper.entityToDto(savedCategory);
 	}
 
 	@Override
+	@Transactional
 	public CategoryDto deleteCategory(int categoryId) throws DataNotFoundException, DataConflictException {
 		CategoryEntity categoryToDelete = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new DataNotFoundException("Category with id[" + categoryId + "] doesn't exist.")
 		);
-		try {
-			categoryRepository.deleteById(categoryId);
-		} catch (DataIntegrityViolationException e) {
-			throw new DataConflictException(e.getMessage());
-		}
+		categoryRepository.deleteById(categoryId);
 		return CategoryMapper.entityToDto(categoryToDelete);
 	}
 
 	@Override
+	@Transactional
 	public CategoryDto updateCategory(int categoryId, NewCategoryDto newCategoryDto) throws BadRequestException, DataNotFoundException, DataConflictException {
 		CategoryEntity categoryToUpdate = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new DataNotFoundException("Category with id[" + categoryId + "] doesn't exist.")
 		);
 		categoryToUpdate.setName(newCategoryDto.getName());
-		try {
-			CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
-			return CategoryMapper.entityToDto(updatedCategory);
-		} catch (DataIntegrityViolationException e) {
-			throw new DataConflictException(e.getMessage());
-		}
+		CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
+		return CategoryMapper.entityToDto(updatedCategory);
 	}
 
 	@Override
+	@Transactional
 	public List<CategoryDto> getCategories(int from, int size) {
 		return categoryRepository.findAll(Pagenator.getPageable(from, size)).getContent().stream()
 				.map(CategoryMapper::entityToDto)
@@ -68,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@Transactional
 	public CategoryDto getCategory(int categoryId) throws DataNotFoundException {
 		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new DataNotFoundException("Category with id[" + categoryId + "] doesn't exist.")

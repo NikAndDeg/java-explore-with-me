@@ -2,8 +2,8 @@ package ru.practicum.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.DataConflictException;
 import ru.practicum.exception.DataNotFoundException;
 import ru.practicum.model.dto.request.NewUserRequest;
@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 
 	@Override
+	@Transactional
 	public List<UserDto> getUsers(List<Integer> usersId, int from, int size) {
 		List<UserEntity> users;
 		if (usersId != null)
@@ -35,16 +36,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public UserDto addUser(NewUserRequest newUser) throws DataConflictException {
-		try {
-			UserEntity savedUserEntity = userRepository.save(UserMapper.newUserRequestRoEntity(newUser));
-			return UserMapper.entityToDto(savedUserEntity);
-		} catch (DataIntegrityViolationException e) {
-			throw new DataConflictException(e.getMessage());
-		}
+		UserEntity savedUserEntity = userRepository.save(UserMapper.newUserRequestRoEntity(newUser));
+		return UserMapper.entityToDto(savedUserEntity);
 	}
 
 	@Override
+	@Transactional
 	public UserDto deleteUser(int userId) throws DataNotFoundException {
 		UserEntity userToDeleteEntity = userRepository.findById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id [" + userId + "] doesn't exist.")

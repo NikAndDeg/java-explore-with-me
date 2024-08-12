@@ -30,6 +30,7 @@ public class StatServiceImpl implements StatService {
 	}
 
 	@Override
+	@Transactional
 	public List<StatDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 		List<Stat> stats;
 		if (unique) {

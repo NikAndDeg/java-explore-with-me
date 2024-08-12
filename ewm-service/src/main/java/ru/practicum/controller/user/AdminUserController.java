@@ -2,9 +2,11 @@ package ru.practicum.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.exception.DataConflictException;
 import ru.practicum.model.dto.request.NewUserRequest;
 import ru.practicum.model.dto.user.UserDto;
 import ru.practicum.service.user.UserService;
@@ -37,7 +39,12 @@ public class AdminUserController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserDto addUser(@RequestBody @Valid NewUserRequest newUser) {
 		log.info("Request to add new user[{}].", newUser);
-		UserDto savedUser = userService.addUser(newUser);
+		UserDto savedUser;
+		try {
+			savedUser = userService.addUser(newUser);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataConflictException(e.getMessage());
+		}
 		log.info("User[{}] saved.", savedUser);
 		return savedUser;
 	}
