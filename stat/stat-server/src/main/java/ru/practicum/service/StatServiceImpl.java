@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.HitDto;
 import ru.practicum.StatDto;
+import ru.practicum.exception.BadRequestException;
 import ru.practicum.mapper.HitDtoMapper;
 import ru.practicum.mapper.StatDtoMapper;
 import ru.practicum.repository.entity.Hit;
@@ -32,6 +33,10 @@ public class StatServiceImpl implements StatService {
 	@Override
 	@Transactional
 	public List<StatDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+		if (start != null && end != null)
+			if (start.isAfter(end))
+				throw new BadRequestException("Range start cannot be after range end.");
+
 		List<Stat> stats;
 		if (unique) {
 			if (uris == null || uris.isEmpty())

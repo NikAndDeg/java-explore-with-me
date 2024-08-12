@@ -329,6 +329,8 @@ public class EventServiceImpl implements EventService {
 
 		sortEventsShortDto(shortEvents, request.getSort());
 
+		sendHit(httpServletRequest);
+
 		sendHits(httpServletRequest,
 				events.stream()
 						.map(EventEntity::getId)
@@ -525,7 +527,7 @@ public class EventServiceImpl implements EventService {
 				.collect(Collectors.toList());
 
 		List<StatDto> stats = statClient.getStats(webClient, LocalDateTime.now().minusYears(10),
-				LocalDateTime.now().plusYears(10), uris, true);
+				LocalDateTime.now().plusYears(10), uris, false);
 
 		return stats.stream()
 				.filter(stat -> stat.getApp().equals(appName))
