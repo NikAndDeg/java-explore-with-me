@@ -13,6 +13,7 @@ import ru.practicum.model.dto.comment.NewCommentDto;
 import ru.practicum.model.entity.CommentEntity;
 import ru.practicum.model.entity.EventEntity;
 import ru.practicum.model.entity.UserEntity;
+import ru.practicum.model.event.EventState;
 import ru.practicum.repostitory.CommentRepository;
 import ru.practicum.repostitory.EventRepository;
 import ru.practicum.repostitory.UserRepository;
@@ -91,13 +92,20 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	@Transactional
-	public CommentDto addComment(int userId, int eventId, NewCommentDto newCommentDto) throws DataNotFoundException {
-		UserEntity commenter = userRepository.findById(userId).orElseThrow(
-				() -> new DataNotFoundException("User with id[" + userId + "doesn't exist.")
+	public CommentDto addComment(int userId, int eventId, NewCommentDto newCommentDto) throws DataNotFoundException,
+			DataConflictException {
+		EventEntity event = eventRepository.findById(eventId).orElseThrow(
+				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
 
-		EventEntity event = eventRepository.findById(eventId).orElseThrow(
-				() -> new DataNotFoundException("Event with id[" + eventId + "doesn't exist.")
+		if (event.getInitiator().getId().equals(userId))
+			throw new DataConflictException("Event initiator cannot add a comment.");
+
+		if (!event.getState().equals(EventState.PUBLISHED))
+			throw new DataConflictException("Event is unpublished.");
+
+		UserEntity commenter = userRepository.findById(userId).orElseThrow(
+				() -> new DataNotFoundException("User with id[" + userId + "] doesn't exist.")
 		);
 
 		CommentEntity commentToSave = CommentMapper.newCommentDtoToEntity(commenter, event, newCommentDto);
@@ -110,11 +118,11 @@ public class CommentServiceImpl implements CommentService {
 	public DeletedCommentDto deleteCommentByUser(int userId, int commentId) throws DataNotFoundException,
 			DataConflictException {
 		UserEntity commenter = userRepository.findById(userId).orElseThrow(
-				() -> new DataNotFoundException("User with id[" + userId + "doesn't exist.")
+				() -> new DataNotFoundException("User with id[" + userId + "] doesn't exist.")
 		);
 
 		CommentEntity commentToDelete = commentRepository.findWithCommenterById(commentId).orElseThrow(
-				() -> new DataNotFoundException("Comment with id[" + commentId + " doesn't exist.")
+				() -> new DataNotFoundException("Comment with id[" + commentId + "] doesn't exist.")
 		);
 
 		if (!commentToDelete.getCommenter().getId().equals(commenter.getId()))
@@ -129,11 +137,11 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public CommentDto getCommentByUser(int userId, int commentId) throws DataNotFoundException {
 		userRepository.findById(userId).orElseThrow(
-				() -> new DataNotFoundException("User with id[" + userId + "doesn't exist.")
+				() -> new DataNotFoundException("User with id[" + userId + "] doesn't exist.")
 		);
 
 		CommentEntity comment = commentRepository.findWithCommenterById(commentId).orElseThrow(
-				() -> new DataNotFoundException("Comment with id[" + commentId + " doesn't exist.")
+				() -> new DataNotFoundException("Comment with id[" + commentId + "] doesn't exist.")
 		);
 
 		return CommentMapper.entityToDto(comment, comment.getCommenter());
@@ -172,6 +180,8 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	private void sortCommentsByCreatedOn(List<CommentDto> comments) {
+		if (comments == null || comments.isEmpty() || comments.size() < 2)
+			return;
 		comments.sort(Comparator.comparing(CommentDto::getCreatedOn));
 	}
 }

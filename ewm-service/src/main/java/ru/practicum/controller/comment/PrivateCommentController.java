@@ -59,7 +59,7 @@ public class PrivateCommentController {
 		return commentDto;
 	}
 
-	//GET /users/{userId}/comments?eventId=int&from=int&size=int
+	//GET /users/{userId}/comments
 	@GetMapping
 	public List<CommentDto> getComments(@PathVariable @Min(1) int userId,
 										@RequestParam @Min(1) int eventId,
