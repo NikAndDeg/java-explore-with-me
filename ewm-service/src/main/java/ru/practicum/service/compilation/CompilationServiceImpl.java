@@ -73,18 +73,19 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
 		List<CompilationEntity> compilations;
 
-		if (pinned != null)
+		if (pinned != null) {
 			compilations = compilationRepository.findWithEventsWithCategoryAndInitiatorAllByPinnedIn(
 					List.of(pinned),
 					Pagenator.getPageable(from, size));
-		else
+		} else {
 			compilations = compilationRepository.findWithEventsWithCategoryAndInitiatorAllByPinnedIn(
 					List.of(true, false),
 					Pagenator.getPageable(from, size));
+		}
 
 		return compilations.stream()
 				.map(compilation -> CompilationMapper.entityToDto(compilation, compilation.getEvents()))
@@ -92,7 +93,7 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public CompilationDto getCompilation(int compilationId) throws DataNotFoundException {
 		CompilationEntity compilation = compilationRepository.findWithEventsWithCategoryAndInitiatorById(compilationId).orElseThrow(
 				() -> new DataNotFoundException("Compilation with id[" + compilationId + "] not found.")

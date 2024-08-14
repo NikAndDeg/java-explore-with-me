@@ -2,6 +2,7 @@ package ru.practicum.service.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.BadRequestException;
@@ -42,7 +43,8 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Transactional
-	public CategoryDto updateCategory(int categoryId, NewCategoryDto newCategoryDto) throws BadRequestException, DataNotFoundException, DataConflictException {
+	public CategoryDto updateCategory(int categoryId, NewCategoryDto newCategoryDto) throws BadRequestException,
+			DataNotFoundException, DataConflictException {
 		CategoryEntity categoryToUpdate = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new DataNotFoundException("Category with id[" + categoryId + "] doesn't exist.")
 		);
@@ -52,15 +54,17 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<CategoryDto> getCategories(int from, int size) {
-		return categoryRepository.findAll(Pagenator.getPageable(from, size)).getContent().stream()
+		Page<CategoryEntity> page = categoryRepository.findAll(Pagenator.getPageable(from, size));
+		return page.getContent()
+				.stream()
 				.map(CategoryMapper::entityToDto)
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public CategoryDto getCategory(int categoryId) throws DataNotFoundException {
 		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new DataNotFoundException("Category with id[" + categoryId + "] doesn't exist.")

@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<EventEntity, Integer> {
 
 	@EntityGraph(attributePaths = {"category", "initiator", "location"})
-	Optional<EventEntity> findWithCategoryInitiatorLocationByIdAndStateIn(int eventId, List<EventState> states);
+	Optional<EventEntity> findWithCategoryInitiatorLocationByIdAndStateIn(int eventId,
+		List<EventState> states);
 
 	@EntityGraph(attributePaths = {"category", "initiator", "location"})
 	Optional<EventEntity> findWithCategoryInitiatorLocationById(int eventId);
@@ -41,8 +42,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Integer> {
 			"AND (cast(:end as timestamp) IS NULL OR e.eventDate <= :end) ")
 	@EntityGraph(attributePaths = {"category", "initiator", "location"})
 	List<EventEntity> findWithCategoryInitiatorLocationBySearchParam(List<Integer> usersId, List<EventState> states,
-																	 List<Integer> categoriesId, LocalDateTime start,
-																	 LocalDateTime end, Pageable pageable);
+		List<Integer> categoriesId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
 	@Query("SELECT e FROM EventEntity e " +
 			"JOIN e.category c " +

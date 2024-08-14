@@ -55,12 +55,11 @@ public class EventServiceImpl implements EventService {
 	private final RequestRepository requestRepository;
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<EventFullDto> getEvents(GetEventsServiceRequest request) throws BadRequestException {
 		if (request.getStart() != null && request.getEnd() != null)
 			if (request.getStart().isAfter(request.getEnd()))
 				throw new BadRequestException("Range start cannot be after range end.");
-
 		List<EventEntity> events = eventRepository.findWithCategoryInitiatorLocationBySearchParam(
 				request.getUsersId(),
 				request.getStates(),
@@ -68,13 +67,10 @@ public class EventServiceImpl implements EventService {
 				request.getStart(),
 				request.getEnd(),
 				Pagenator.getPageable(request.getFrom(), request.getSize()));
-
 		List<EventFullDto> eventFullDtos = events.stream()
 				.map(EventMapper::entityToFullDto)
 				.collect(Collectors.toList());
-
 		setViewsToEventFullDtos(eventFullDtos);
-
 		return eventFullDtos;
 	}
 
@@ -82,35 +78,27 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public EventFullDto updateEvent(int eventId, UpdateEventAdminRequest request) throws BadRequestException,
 			DataNotFoundException, DataNotConditionalException {
-
 		if (request.getEventDate() != null && request.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
 			throw new BadRequestException("Field: eventDate. " +
 					"Error: должно содержать дату, которая еще не наступила. " +
 					"Value: " + request.getEventDate());
-
 		EventEntity eventToUpdate = eventRepository.findWithCategoryInitiatorLocationById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-
 		if (eventToUpdate.getEventDate().isBefore(LocalDateTime.now().plusHours(1)))
 			throw new DataConflictException("Event date mustn't be earlier than one hour from the publication date.");
-
 		if (!eventToUpdate.getState().equals(EventState.PENDING))
 			throw new DataConflictException("Event state must be PENDING.");
-
 		setNewInfoForEventToUpdateByAdmin(eventToUpdate, request);
-
 		return EventMapper.entityToFullDto(eventRepository.save(eventToUpdate));
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<EventShortDto> getUserEvents(int userId, int from, int size) throws DataNotFoundException {
 		UserEntity user = getUserEntityOrThrowException(userId);
-
 		List<EventEntity> userEvents = eventRepository.findWithCategoryAllByInitiatorId(userId,
 				Pagenator.getPageable(from, size));
-
 		return userEvents.stream()
 				.map(event -> EventMapper.entityToShortDto(event, user))
 				.collect(Collectors.toList());
@@ -120,44 +108,30 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public EventFullDto addEvent(int userId, NewEventDto newEventDto) throws BadRequestException,
 			DataNotFoundException {
-
 		if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
 			throw new BadRequestException("Field: eventDate. " +
 					"Error: должно содержать дату, которая еще не наступила. " +
 					"Value: " + newEventDto.getEventDate());
-
 		UserEntity user = getUserEntityOrThrowException(userId);
-
 		CategoryEntity category = getCategoryEntityOrThrowException(newEventDto.getCategory());
-
 		LocationEntity location = LocationMapper.dtoToEntity(newEventDto.getLocation());
-
 		EventEntity eventToSave = EventMapper.newEventDtoToEntity(newEventDto);
-
 		eventToSave.setInitiator(user);
-
 		eventToSave.setCategory(category);
-
 		eventToSave.setLocation(location);
-
-
 		return EventMapper.entityToFullDto(eventRepository.save(eventToSave));
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public EventFullDto getUserEvent(int userId, int eventId) throws DataNotFoundException {
 		EventEntity eventEntity = eventRepository.findWithCategoryInitiatorLocationById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + +eventId + "] not found.")
 		);
-
 		if (!eventEntity.getInitiator().getId().equals(userId))
 			throw new DataNotFoundException("Event with id[" + +eventId + "] not found.");
-
 		EventFullDto eventDto = EventMapper.entityToFullDto(eventEntity);
-
 		eventDto.setViews(getEventViews(eventId));
-
 		return eventDto;
 	}
 
@@ -165,46 +139,34 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public EventFullDto updateEvent(int userId, int eventId, UpdateEventUserRequest updateRequest) throws DataNotFoundException,
 			BadRequestException, DataConflictException {
-
 		if (updateRequest.getEventDate() != null && updateRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
 			throw new BadRequestException("Field: eventDate. " +
 					"Error: должно содержать дату, которая еще не наступила. " +
 					"Value: " + updateRequest.getEventDate());
-
 		EventEntity eventToUpdate = eventRepository.findWithCategoryInitiatorLocationById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-
 		if (!eventToUpdate.getInitiator().getId().equals(userId))
 			throw new DataNotFoundException("Event with id[" + +eventId + "] not found.");
-
 		if (eventToUpdate.getState().equals(EventState.PUBLISHED))
 			throw new DataConflictException("Event with id[" + eventId + "] is published.");
-
 		setNewInfoForEventToUpdateByUser(eventToUpdate, updateRequest);
-
 		EventFullDto updatedEvent = EventMapper.entityToFullDto(eventRepository.save(eventToUpdate));
-
 		updatedEvent.setViews(getEventViews(eventId));
-
 		return updatedEvent;
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ParticipationRequestDto> getParticipationRequests(int userId, int eventId) {
 		EventEntity event = eventRepository.findWithInitiatorRequestsWithRequesterById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-
 		if (!event.getInitiator().getId().equals(userId))
 			throw new DataNotFoundException("Event with id[" + +eventId + "] not found.");
-
 		List<ParticipationRequestEntity> requests = event.getRequests();
-
 		if (requests.isEmpty())
 			return List.of();
-
 		return requests.stream()
 				.map(entity -> ParticipationRequestMapper.entityToDto(entity, event.getId()))
 				.collect(Collectors.toList());
@@ -215,27 +177,21 @@ public class EventServiceImpl implements EventService {
 	public EventRequestStatusUpdateResult updateEventRequestStatus(int userId, int eventId,
 																   EventRequestStatusUpdateRequest updateRequest)
 			throws DataNotFoundException, DataNotConditionalException, DataConflictException {
-
 		EventEntity event = eventRepository.findWithInitiatorRequestsWithRequesterById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-
 		if (!event.getRequestModeration() || event.getParticipantLimit().equals(0))
 			throw new DataNotConditionalException("Event doesn't require confirmation or rejection of requests.");
-
 		if (!event.getParticipantLimit().equals(0) && event.getParticipantLimit().equals(event.getConfirmedRequests())
 				&& updateRequest.getStatus().equals(ParticipationStatus.CONFIRMED))
 			throw new DataConflictException("The participant limit has been reached");
-
 		setNewStatusToParticipationRequests(event, updateRequest);
-
 		eventRepository.save(event);
-
 		return ParticipationRequestMapper.entitiesStatusUpdateResult(event.getRequests(), event.getId());
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ParticipationRequestDto> getUserParticipationRequests(int userId) throws DataNotFoundException {
 		UserEntity user = userRepository.findWithRequestsAndEventsById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id [" + userId + "] doesn't exist.")
@@ -252,33 +208,25 @@ public class EventServiceImpl implements EventService {
 	@Transactional
 	public ParticipationRequestDto addParticipationRequest(int userId, int eventId) throws DataNotFoundException,
 			DataConflictException {
-
 		UserEntity user = userRepository.findWithRequestsById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id [" + userId + "] doesn't exist.")
 		);
-
 		List<Integer> userRequestsEventsId = user.getRequests().stream()
 				.map(request -> request.getEvent().getId())
 				.toList();
 		if (userRequestsEventsId.contains(eventId))
 			throw new DataConflictException("Cannot add duplicate request.");
-
-
 		EventEntity event = eventRepository.findById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-
 		if (event.getInitiator().getId().equals(userId))
 			throw new DataConflictException("Event initiator cannot add a request.");
-
 		if (!event.getState().equals(EventState.PUBLISHED))
 			throw new DataConflictException("Event is unpublished.");
-
 		int participantLimit = event.getParticipantLimit();
 		int confirmedRequests = event.getConfirmedRequests();
 		if (participantLimit != 0 && participantLimit == confirmedRequests)
 			throw new DataConflictException("Participation limit reached.");
-
 		ParticipationRequestEntity requestToSave = createRequest(user, event);
 		ParticipationRequestEntity savedRequest = requestRepository.save(requestToSave);
 		return ParticipationRequestMapper.entityToDto(savedRequest);
@@ -290,12 +238,9 @@ public class EventServiceImpl implements EventService {
 		ParticipationRequestEntity request = requestRepository.findWithRequesterEventById(requestId).orElseThrow(
 				() -> new DataNotFoundException("Request with id [" + requestId + "] doesn't exist.")
 		);
-
 		if (request.getRequester().getId() != userId)
 			throw new DataNotFoundException("User is not requester.");
-
 		EventEntity event = request.getEvent();
-
 		if (request.getStatus().equals(ParticipationStatus.CONFIRMED)) {
 			request.setStatus(ParticipationStatus.CANCELED);
 			event.setConfirmedRequests(event.getConfirmedRequests() - 1);
@@ -304,56 +249,43 @@ public class EventServiceImpl implements EventService {
 		if (request.getStatus().equals(ParticipationStatus.PENDING)) {
 			request.setStatus(ParticipationStatus.CANCELED);
 		}
-
 		return ParticipationRequestMapper.entityToDto(requestRepository.save(request));
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<EventShortDto> getPublicEvents(PublicGetEventsRequest request, HttpServletRequest httpServletRequest) throws
 			BadRequestException {
-
 		if (request.getStart() != null && request.getEnd() != null)
 			if (request.getStart().isAfter(request.getEnd()))
 				throw new BadRequestException("Range start cannot be after range end.");
-
 		List<EventEntity> events = eventRepository.findWithCategoryAndInitiatorBySearchParam(EventState.PUBLISHED,
 				request.getText(), request.getStart(), request.getEnd(), request.getCategories(), request.getPaid(),
 				request.getOnlyAvailable(), request.getPageable());
-
 		List<EventShortDto> shortEvents = events.stream()
 				.map(EventMapper::entityToShortDto)
 				.collect(Collectors.toList());
-
 		setViewsToEventShortDtos(shortEvents);
-
 		sortEventsShortDto(shortEvents, request.getSort());
-
 		sendHit(httpServletRequest);
-
 		sendHits(httpServletRequest,
 				events.stream()
 						.map(EventEntity::getId)
 						.collect(Collectors.toList())
 		);
-
 		return shortEvents;
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public EventFullDto getEvent(int eventId, HttpServletRequest httpRequest) throws DataNotFoundException {
 		EventEntity eventEntity = eventRepository.findWithCategoryInitiatorLocationByIdAndStateIn(eventId,
 				List.of(EventState.PUBLISHED)).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-
 		EventFullDto eventDto = EventMapper.entityToFullDto(eventEntity);
-
 		eventDto.setViews(getEventViews(eventId));
-
 		sendHit(httpRequest);
-
 		return eventDto;
 	}
 
@@ -420,7 +352,6 @@ public class EventServiceImpl implements EventService {
 			if (!request.getStatus().equals(ParticipationStatus.PENDING))
 				throw new DataConflictException("Requests must have status PENDING." +
 						" Request with id[" + request.getId() + "] have status[" + request.getStatus() + "].");
-
 			if (updateRequestIds.contains(request.getId())) {
 				if (newStatus.equals(ParticipationStatus.CONFIRMED)) {
 					if (!event.getParticipantLimit().equals(0) && !event.getParticipantLimit().equals(event.getConfirmedRequests())) {
@@ -487,9 +418,7 @@ public class EventServiceImpl implements EventService {
 		List<Integer> eventsId = eventFullDtos.stream()
 				.map(EventFullDto::getId)
 				.collect(Collectors.toList());
-
 		Map<Integer, Long> eventIdViews = getEventsViews(eventsId);
-
 		eventFullDtos.forEach(
 				event -> {
 					Long views = eventIdViews.get(event.getId());
@@ -507,9 +436,7 @@ public class EventServiceImpl implements EventService {
 		List<Integer> eventsId = eventShortDtos.stream()
 				.map(EventShortDto::getId)
 				.collect(Collectors.toList());
-
 		Map<Integer, Long> eventIdViews = getEventsViews(eventsId);
-
 		eventShortDtos.forEach(
 				event -> {
 					Long views = eventIdViews.get(event.getId());
@@ -525,10 +452,8 @@ public class EventServiceImpl implements EventService {
 		List<String> uris = eventsId.stream()
 				.map(eventId -> "/events/" + eventId)
 				.collect(Collectors.toList());
-
 		List<StatDto> stats = statClient.getStats(webClient, LocalDateTime.now().minusYears(10),
 				LocalDateTime.now().plusYears(10), uris, false);
-
 		return stats.stream()
 				.filter(stat -> stat.getApp().equals(appName))
 				.collect(Collectors.toMap(

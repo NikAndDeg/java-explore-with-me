@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<UserDto> getUsers(List<Integer> usersId, int from, int size) {
 		List<UserEntity> users;
 		if (usersId != null)
