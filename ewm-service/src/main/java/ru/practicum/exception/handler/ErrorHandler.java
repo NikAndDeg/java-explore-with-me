@@ -1,5 +1,6 @@
 package ru.practicum.exception.handler;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +53,16 @@ public class ErrorHandler {
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ApiError handleBadRequestException(final BadRequestException e) {
+		log.warn(e.getMessage());
+		return new ApiError(HttpStatus.BAD_REQUEST.getReasonPhrase(),
+				"For the requested operation the conditions are not met.",
+				e.getMessage(),
+				LocalDateTime.now());
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ApiError handleConstraintViolationException(final ConstraintViolationException e) {
 		log.warn(e.getMessage());
 		return new ApiError(HttpStatus.BAD_REQUEST.getReasonPhrase(),
 				"For the requested operation the conditions are not met.",

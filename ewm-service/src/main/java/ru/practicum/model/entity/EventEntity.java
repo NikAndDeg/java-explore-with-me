@@ -33,6 +33,9 @@ public class EventEntity {
 	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
 	private List<ParticipationRequestEntity> requests;
 
+	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+	private List<CommentEntity> comments;
+
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "event_state_id")
 	private EventState state;
