@@ -1,29 +1,29 @@
 package ru.practicum;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Setter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Setter
 public class StatClient {
-	@Value("${stat-server.url}")
-	private static String statServerUrl;
-	@Value("${stat-server.url.path.hit}")
-	private static String hitPath;
-	@Value("${stat-server.url.path.stat}")
-	private static String statPath;
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private String statServerHost;
+	private Integer statServerPort;
+	private String hitPath;
+	private String statPath;
 
-	public static Mono<?> sendHitToSave(WebClient client,
-										String app,
-										String uri,
-										String ip,
-										LocalDateTime timestamp) {
+	public void sendHitToSave(WebClient client,
+							  String app,
+							  String uri,
+							  String ip,
+							  LocalDateTime timestamp) {
 		HitDto hitToSave = HitDto.builder()
 				.app(app)
 				.uri(uri)
@@ -31,36 +31,41 @@ public class StatClient {
 				.timestamp(timestamp)
 				.build();
 		WebClient.RequestHeadersSpec<?> request = client.post()
-				.uri(statServerUrl + hitPath)
+				.uri(uriBuilder -> uriBuilder.scheme("http")
+						.host(statServerHost)
+						.port(statServerPort)
+						.path(hitPath)
+						.build()
+				)
 				.bodyValue(hitToSave)
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header(HttpHeaders.ACCEPT, MediaType.ALL_VALUE);
-		return handleResponseSpec(request.retrieve());
+		request.retrieve().bodyToMono(String.class).block();
 	}
 
-	public static Mono<?> getStats(WebClient client,
-								   LocalDateTime start,
-								   LocalDateTime end,
-								   List<String> uris,
-								   Boolean unique) {
+	public List<StatDto> getStats(WebClient client,
+								  LocalDateTime start,
+								  LocalDateTime end,
+								  List<String> uris,
+								  Boolean unique) {
 		WebClient.RequestHeadersSpec<?> request = client.get()
-				.uri(uriBuilder -> createUriToGetStats(uriBuilder, start, end, uris, unique))
+				.uri((uriBuilder -> createUriToGetStats(uriBuilder, start, end, uris, unique)))
 				.header(HttpHeaders.ACCEPT, MediaType.ALL_VALUE);
-		return handleResponseSpec(request.retrieve());
+		return request.retrieve().bodyToFlux(StatDto.class).collectList().block();
 	}
 
-	private static Mono<?> handleResponseSpec(WebClient.ResponseSpec responseSpec) {
-		return responseSpec.bodyToMono(String.class);
-	}
+	private URI createUriToGetStats(UriBuilder uriBuilder,
+									LocalDateTime start,
+									LocalDateTime end,
+									List<String> uris,
+									Boolean unique) {
 
-	private static URI createUriToGetStats(UriBuilder uriBuilder,
-										   LocalDateTime start,
-										   LocalDateTime end,
-										   List<String> uris,
-										   Boolean unique) {
-		uriBuilder = uriBuilder.path(statServerUrl + statPath)
-				.queryParam("start", start)
-				.queryParam("end", end);
+		uriBuilder = uriBuilder.scheme("http")
+				.host(statServerHost)
+				.port(statServerPort)
+				.path(statPath)
+				.queryParam("start", start.format(FORMATTER))
+				.queryParam("end", end.format(FORMATTER));
 		if (uris != null && !uris.isEmpty())
 			uriBuilder = uriBuilder.queryParam("uris", uris);
 		if (unique != null)

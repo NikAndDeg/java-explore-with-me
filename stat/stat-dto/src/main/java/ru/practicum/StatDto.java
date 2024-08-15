@@ -1,10 +1,10 @@
 package ru.practicum;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
 public class StatDto {
 	private String app;
 	private String uri;

@@ -1,0 +1,84 @@
+Services:
+    CategoryServiceImpl ALMOST DONE
+        В методе CategoryDto deleteCategory(int categoryId) отловить исключение, выбрасываемое при
+        попытке удалить категорию, связанную с событиями. Выбросить свое исключение, обработать его.
+    UserServiceImpl DONE
+    EventService IN PROGRESS
+        List<EventShortDto> getPublicEvents(PublicGetEventsRequest request) ???
+    CompilationService
+
+Controllers:
+    category:
+        AdminCategoryController DONE
+        PublicCategoryController DONE
+    compilation:
+        AdminCompilationController DONE
+        PublicCompilationController DONE
+    event:
+        AdminEventController DONE
+        PrivateEventController DONE
+        PublicEventController DONE
+    user:
+        AdminUserController DONE
+
+Repositories:
+
+DB:
+    ewm-db
+
+    users DONE
+        int user_id PK,
+        varchar(250) name,
+        varchar(254) email unique;
+
+    categories DONE
+        int category_id PK,
+        varchar(50) category_name unique;
+
+    locations DONE
+        int location_id PK,
+        float lat,
+        float lon;
+
+    event_statuses DONE
+        int event_state_id PK,
+        varchar(50) event_state_name unique;
+
+    events DONE
+        int event_id PK,
+        int category_id FK,
+        int initiator_id FK,
+        int location_id FK;
+        int event_state_id FK,
+        varchar(120) title,
+        varchar(2000) annotation,
+        varchar(7000) description,
+        int views, ????
+        int participant_limit,
+        int confirmed_requests;
+        TIMESTAMP created_on,
+        TIMESTAMP event_date,
+        TIMESTAMP published_on,
+        boolean paid,
+        boolean request_moderation;
+
+    compilations DONE
+        int compilation_id PK,
+        varchar(50) title,
+        boolean pinned;
+
+    compilations_events DONE
+        int compilation_events_id PK,
+        int compilation_id FK,
+        int event_id FK;
+
+    participation_statuses DONE
+        int status_id PK,
+        varchar(50) status_name;
+
+    participation_requests DONE
+        int request_id PK,
+        int requester_id FK,
+        int event_id FK,
+        int status_id FK,
+        TIMESTAMP created_on;

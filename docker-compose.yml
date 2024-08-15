@@ -29,7 +29,7 @@ services:
   ewm-db:
     image: postgres:14-alpine
     ports:
-      - "5433:5433"
+      - "5433:5432"
     volumes:
       - /var/lib/postgresql/data/
     environment:
@@ -45,6 +45,11 @@ services:
       - ewm-db
       - stats-server
     environment:
+      - EWM_SERVICE_PORT=8080
       - POSTGRES_USER=ewmDeveloper
       - POSTGRES_PASSWORD=ewmDeveloper
-      - DB_PORT=5433
+      - DB_NAME=ewmDB
+      - DB_PORT=5432
+      - DB_HOST=ewm-db
+      - STAT_SERVER_HOST=stats-server
+      - STAT_SERVER_PORT=9090
