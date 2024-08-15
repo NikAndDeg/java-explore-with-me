@@ -1334,7 +1334,7 @@
 											"\r",
 											"pm.test(\"comment id test\", function() {\r",
 											"   var jsonData = pm.response.json();\r",
-											"   pm.expect(jsonData.id).to.eq(pm.collectionVariables.get(\"commentId\"));\r",
+											"   pm.expect(jsonData.id).to.eq(parseInt(pm.collectionVariables.get(\"commentId\")));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"eventId test\", function() {\r",
@@ -1359,8 +1359,11 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"packages": {},
-										"type": "text/javascript"
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1397,7 +1400,7 @@
 											"\r",
 											"pm.test(\"comment id test\", function() {\r",
 											"   var jsonData = pm.response.json();\r",
-											"   pm.expect(jsonData.id).to.eq(pm.collectionVariables.get(\"commentId\"));\r",
+											"   pm.expect(jsonData.id).to.eq(parseInt(pm.collectionVariables.get(\"commentId\"))); \r",
 											"});\r",
 											"\r",
 											"pm.test(\"eventId test\", function() {\r",
@@ -1453,7 +1456,7 @@
 											"\r",
 											"pm.test(\"comment id test\", function() {\r",
 											"   var jsonData = pm.response.json();\r",
-											"   pm.expect(jsonData.id).to.eq(pm.collectionVariables.get(\"commentId\"));\r",
+											"   pm.expect(jsonData.id).to.eq(parseInt(pm.collectionVariables.get(\"commentId\")));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"eventId test\", function() {\r",
@@ -2503,7 +2506,7 @@
 											"\r",
 											"pm.test(\"comment id test\", function() {\r",
 											"   var jsonData = pm.response.json();\r",
-											"   pm.expect(jsonData.id).to.eq(pm.collectionVariables.get(\"commentId\"));\r",
+											"   pm.expect(jsonData.id).to.eq(parseInt(pm.collectionVariables.get(\"commentId\")));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"eventId test\", function() {\r",
@@ -2567,7 +2570,7 @@
 											"\r",
 											"pm.test(\"comment id test\", function() {\r",
 											"   var jsonData = pm.response.json();\r",
-											"   pm.expect(jsonData.id).to.eq(pm.collectionVariables.get(\"commentId\"));\r",
+											"   pm.expect(jsonData.id).to.eq(parseInt(pm.collectionVariables.get(\"commentId\")));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"eventId test\", function() {\r",
@@ -2975,7 +2978,7 @@
 											"\r",
 											"pm.test(\"comment id test\", function() {\r",
 											"   var jsonData = pm.response.json();\r",
-											"   pm.expect(jsonData.id).to.eq(pm.collectionVariables.get(\"commentId\"));\r",
+											"   pm.expect(jsonData.id).to.eq(parseInt(pm.collectionVariables.get(\"commentId\")));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"eventId test\", function() {\r",
