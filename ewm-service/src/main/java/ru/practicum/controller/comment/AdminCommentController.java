@@ -55,7 +55,7 @@ public class AdminCommentController {
 		return comment;
 	}
 
-	//GET /admin/comments/?eventId=int&from=int&size=int
+	//GET /admin/comments
 	@GetMapping()
 	public List<CommentDto> getComments(@RequestParam @Min(1) int eventId,
 										@RequestParam(required = false) String text,
