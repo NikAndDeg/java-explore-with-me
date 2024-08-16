@@ -18,7 +18,7 @@ public interface CommentService {
 	CommentDto getCommentByAdmin(int commentId) throws DataNotFoundException;
 
 	List<CommentDto> getCommentsByAdmin(int eventId, String text, LocalDateTime start, LocalDateTime end,
-										int from, int size) throws DataNotFoundException, BadRequestException;
+		int from, int size) throws DataNotFoundException, BadRequestException;
 
 	CommentDto addComment(int userId, int eventId, NewCommentDto newCommentDto) throws DataNotFoundException;
 
@@ -27,5 +27,5 @@ public interface CommentService {
 	CommentDto getCommentByUser(int userId, int commentId) throws DataNotFoundException;
 
 	List<CommentDto> getCommentsByUser(int userId, int eventId, String text, LocalDateTime start, LocalDateTime end,
-									   int from, int size) throws DataNotFoundException, BadRequestException;
+		int from, int size) throws DataNotFoundException, BadRequestException;
 }

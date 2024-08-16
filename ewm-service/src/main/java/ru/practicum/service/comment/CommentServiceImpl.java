@@ -66,9 +66,9 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public List<CommentDto> getCommentsByAdmin(int eventId, String text, LocalDateTime start, LocalDateTime end,
 		int from, int size) throws DataNotFoundException, BadRequestException {
-		if (start != null && end != null)
-			if (start.isAfter(end))
-				throw new BadRequestException("Range start cannot be after range end.");
+		if (start != null && end != null && start.isAfter(end)) {
+			throw new BadRequestException("Range start cannot be after range end.");
+		}
 		eventRepository.findById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
@@ -88,10 +88,12 @@ public class CommentServiceImpl implements CommentService {
 		EventEntity event = eventRepository.findById(eventId).orElseThrow(
 				() -> new DataNotFoundException("Event with id[" + eventId + "] doesn't exist.")
 		);
-		if (event.getInitiator().getId().equals(userId))
+		if (event.getInitiator().getId().equals(userId)) {
 			throw new DataConflictException("Event initiator cannot add a comment.");
-		if (!event.getState().equals(EventState.PUBLISHED))
+		}
+		if (!event.getState().equals(EventState.PUBLISHED)) {
 			throw new DataConflictException("Event is unpublished.");
+		}
 		UserEntity commenter = userRepository.findById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id[" + userId + "] doesn't exist.")
 		);
@@ -102,15 +104,16 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	@Transactional
 	public DeletedCommentDto deleteCommentByUser(int userId, int commentId) throws DataNotFoundException,
-			DataConflictException {
+		DataConflictException {
 		UserEntity commenter = userRepository.findById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id[" + userId + "] doesn't exist.")
 		);
 		CommentEntity commentToDelete = commentRepository.findWithCommenterById(commentId).orElseThrow(
 				() -> new DataNotFoundException("Comment with id[" + commentId + "] doesn't exist.")
 		);
-		if (!commentToDelete.getCommenter().getId().equals(commenter.getId()))
+		if (!commentToDelete.getCommenter().getId().equals(commenter.getId())) {
 			throw new DataConflictException("User is not commenter.");
+		}
 		commentRepository.delete(commentToDelete);
 		return CommentMapper.entityToDeletedDto(commentToDelete);
 	}
@@ -131,9 +134,9 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public List<CommentDto> getCommentsByUser(int userId, int eventId, String text, LocalDateTime start,
 		LocalDateTime end, int from, int size) throws DataNotFoundException, BadRequestException {
-		if (start != null && end != null)
-			if (start.isAfter(end))
-				throw new BadRequestException("Range start cannot be after range end.");
+		if (start != null && end != null && start.isAfter(end)) {
+			throw new BadRequestException("Range start cannot be after range end.");
+		}
 		userRepository.findById(userId).orElseThrow(
 				() -> new DataNotFoundException("User with id [" + userId + "]  doesn't exist.")
 		);

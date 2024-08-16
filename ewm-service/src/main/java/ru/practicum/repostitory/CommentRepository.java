@@ -21,6 +21,6 @@ public interface CommentRepository extends JpaRepository<CommentEntity,Integer> 
 			"AND (cast(:start as timestamp) IS NULL OR c.createdOn >= :start) " +
 			"AND (cast(:end as timestamp) IS NULL OR c.createdOn <= :end) ")
 	@EntityGraph(attributePaths = {"commenter"})
-	List<CommentEntity> findWithCommenterBySearchParam(Integer eventId, String text, LocalDateTime start, LocalDateTime end,
-													   Pageable pageable);
+	List<CommentEntity> findWithCommenterBySearchParam(Integer eventId, String text, LocalDateTime start,
+		LocalDateTime end, Pageable pageable);
 }
